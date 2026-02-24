@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>A Graxa – Spa do Calçado</title>
+  <style>
+    :root {
+      --bg:#0f0f0f; --surface:#1a1a1a; --border:#2e2e2e;
+      --accent:#f0c040; --accent2:#e05a2b;
+      --text:#f0ede8; --muted:#777; --green:#4ade80;
+      --red:#f87171;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;padding:16px;padding-bottom:60px}
+
+    /* HEADER */
+    header{background:#1a1a1a;border:1px solid #2e2e2e;border-radius:14px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+    .logo-circle{width:52px;height:52px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+    .biz-nome{font-family:monospace;font-size:1.05rem;font-weight:700;color:var(--accent);letter-spacing:.03em}
+    .biz-info{font-size:.68rem;color:var(--muted);font-family:monospace;margin-top:2px;line-height:1.6}
+
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+    .sec{font-family:monospace;font-size:.6rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;display:block}
+    .f{margin-bottom:12px}
+    .lbl{display:block;font-size:.7rem;color:var(--muted);margin-bottom:5px;font-family:monospace}
+    input[type=text],input[type=tel],input[type=number],input[type=date],input[type=time],textarea,select{
+      width:100%;background:#111;border:1px solid var(--border);border-radius:8px;color:var(--text);
+      font-family:inherit;font-size:.92rem;padding:11px 13px;outline:none;-webkit-appearance:none;box-sizing:border-box}
+    input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+    textarea{resize:vertical;min-height:80px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+    /* PAGAMENTO */
+    .pag-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+    .pag-btn{padding:13px;font-family:monospace;font-size:.82rem;font-weight:700;cursor:pointer;border:none;background:#111;color:var(--muted);transition:all .2s;text-align:center}
+    .pag-btn.pago.active{background:#1a3a2a;color:var(--green);border-left:3px solid var(--green)}
+    .pag-btn.npago.active{background:#3a1a1a;color:var(--red);border-right:3px solid var(--red)}
+
+    /* FOTO */
+    .foto-box{border:1px solid var(--border);border-radius:10px;padding:14px;background:#111;margin-bottom:12px}
+    .foto-titulo{font-family:monospace;font-size:.68rem;color:var(--accent);display:block;margin-bottom:10px}
+    .foto-prev{display:none;margin-bottom:10px;border-radius:8px;overflow:hidden}
+    .foto-prev.show{display:block}
+    .foto-prev img{width:100%;max-height:200px;object-fit:cover;display:block}
+    .foto-prev-bar{background:#1a1a1a;padding:8px;display:flex;justify-content:flex-end}
+    .btn-rem{background:#3a1010;color:#f87171;border:1px solid #5a2020;border-radius:6px;padding:6px 14px;font-family:monospace;font-size:.68rem;cursor:pointer}
+    .foto-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .foto-lbl{display:flex;flex-direction:column;align-items:center;gap:6px;background:#1a1a1a;border:1.5px solid var(--border);border-radius:10px;padding:16px 8px;cursor:pointer;position:relative;overflow:hidden;text-align:center}
+    .foto-lbl:active{border-color:var(--accent)}
+    .foto-lbl .fi{font-size:1.8rem}
+    .foto-lbl .ft{font-family:monospace;font-size:.72rem;color:var(--text);font-weight:600}
+    .foto-lbl input[type=file]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
+
+    /* BOTÕES */
+    .btn-now{background:none;border:1px solid var(--accent);color:var(--accent);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:.72rem;cursor:pointer;width:100%;margin-top:8px}
+    .btn-print{width:100%;background:var(--accent);color:#111;border:none;border-radius:10px;padding:15px;font-family:monospace;font-size:.92rem;font-weight:700;cursor:pointer;margin-top:8px}
+    .btn-prev{width:100%;background:none;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:13px;font-family:monospace;font-size:.82rem;cursor:pointer;margin-top:8px}
+    .btn-cal{width:100%;background:#1a3a2a;color:var(--green);border:1px solid #2a5a3a;border-radius:10px;padding:13px;font-family:monospace;font-size:.82rem;font-weight:600;cursor:pointer;margin-top:8px}
+    .btn-send-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .btn-email{background:#1a2a3a;color:#60a5fa;border:1px solid #2a4a6a;border-radius:10px;padding:13px 8px;font-family:monospace;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+    .btn-sms{background:#2a1a3a;color:#c084fc;border:1px solid #4a2a6a;border-radius:10px;padding:13px 8px;font-family:monospace;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+    .send-modal{background:#1a1a1a;border-top:1px solid var(--border);border-radius:18px 18px 0 0;padding:20px 16px 44px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+    .send-input{width:100%;background:#111;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:.92rem;padding:11px 13px;outline:none;-webkit-appearance:none;box-sizing:border-box;margin-bottom:10px}
+    .send-input:focus{border-color:var(--accent)}
+    .send-preview{background:#111;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:monospace;font-size:.72rem;color:#ccc;line-height:1.7;margin-bottom:12px;white-space:pre-wrap;word-break:break-word}
+    .mb-email{background:#1a2a3a;color:#60a5fa;border:1px solid #2a4a6a}
+    .mb-sms{background:#2a1a3a;color:#c084fc;border:1px solid #4a2a6a}
+    .mb-wa{grid-column:1/-1;background:#1a3020;color:#4ade80;border:1px solid #2a5a3a}
+
+    /* MODAL */
+    .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;align-items:flex-end;justify-content:center}
+    .ov.open{display:flex}
+    .modal{background:#1a1a1a;border-top:1px solid var(--border);border-radius:18px 18px 0 0;padding:20px 16px 44px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
+    .modal-t{font-family:monospace;font-size:.65rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;text-align:center}
+    .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+    .mb{border-radius:8px;padding:12px;font-family:monospace;font-size:.78rem;font-weight:600;cursor:pointer;border:none}
+    .mb-close{background:var(--border);color:var(--text)}
+    .mb-print{background:var(--accent);color:#111}
+    .mb-cal{grid-column:1/-1;background:#1a3a2a;color:var(--green);border:1px solid #2a5a3a}
+
+    /* ETIQUETA */
+    .etq{background:#fff;color:#111;border-radius:8px;padding:16px 18px;font-family:monospace;position:relative;overflow:hidden}
+    .etq::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:#e05a2b}
+
+    /* Cabeçalho da etiqueta com logo do negócio */
+    .etq-top{background:#111;margin:-16px -18px 12px;padding:12px 16px 12px 20px;display:flex;align-items:center;justify-content:space-between}
+    .etq-biz{display:flex;flex-direction:column}
+    .etq-biz-nome{font-size:.65rem;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
+    .etq-biz-info{font-size:.52rem;color:#aaa;margin-top:2px;line-height:1.5}
+    .etq-num-badge{background:#e05a2b;color:#fff;font-size:.6rem;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+
+    .etq-row{display:flex;gap:6px;margin-bottom:7px;padding-left:8px;align-items:flex-start}
+    .etq-key{font-size:.54rem;color:#999;text-transform:uppercase;letter-spacing:.08em;min-width:66px;padding-top:1px}
+    .etq-val{font-size:.78rem;font-weight:600;color:#111;flex:1;line-height:1.35;word-break:break-word}
+    .etq-rep{font-size:.74rem;font-weight:400;font-family:sans-serif}
+
+    /* Badge pagamento na etiqueta */
+    .etq-pag-pago{background:#d1fae5;color:#065f46;font-size:.64rem;font-weight:700;padding:4px 12px;border-radius:20px;display:inline-block;margin:2px 0 2px 8px;letter-spacing:.05em}
+    .etq-pag-npago{background:#fee2e2;color:#991b1b;font-size:.64rem;font-weight:700;padding:4px 12px;border-radius:20px;display:inline-block;margin:2px 0 2px 8px;letter-spacing:.05em}
+
+    .etq-fotos{display:none;gap:6px;margin:10px 0 8px 8px}
+    .etq-fotos.show{display:flex}
+    .etq-fotos img{width:calc(50% - 3px);height:85px;object-fit:cover;border-radius:5px;border:1px solid #eee}
+    .etq-fotos img.single{width:100%;height:100px}
+    .etq-ftr{border-top:1.5px dashed #ddd;margin-top:10px;padding-top:8px;padding-left:8px;display:flex;justify-content:space-between;align-items:center}
+    .badge-estado{background:#fef3c7;color:#92400e;font-size:.54rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.08em;text-transform:uppercase}
+
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#111;padding:10px 20px;border-radius:20px;font-family:monospace;font-size:.75rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:300;white-space:nowrap}
+    .toast.show{opacity:1}
+
+    #print-area{display:none}
+    @media print{
+      @page{size:A4 portrait;margin:8mm}
+      body>*:not(#print-area){display:none!important}
+      #print-area{
+        display:block!important;
+        background:#fff;
+        width:100%;
+        height:100%;
+      }
+      /* Página A4 dividida em 2 metades verticais */
+      .print-page{
+        display:flex;
+        flex-direction:column;
+        width:100%;
+        height:calc(297mm - 16mm); /* A4 menos margens */
+        gap:0;
+      }
+      /* Cada metade ocupa 50% da página */
+      .print-half{
+        width:100%;
+        height:50%;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        padding:6mm 4mm;
+        position:relative;
+      }
+      /* Linha divisória a tracejado entre original e cópia */
+      .print-half.copia{
+        border-top:2px dashed #bbb;
+      }
+      /* Etiqueta dentro de cada metade */
+      .print-half .etq{
+        border:1.5px solid #ccc;
+        font-size:9.5pt;
+        border-radius:6px;
+        overflow:hidden;
+        max-width:100%;
+      }
+      /* Label ORIGINAL / CÓPIA */
+      .print-tag{
+        font-family:monospace;
+        font-size:7pt;
+        font-weight:700;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+        color:#999;
+        margin-bottom:3mm;
+        display:flex;
+        align-items:center;
+        gap:6px;
+      }
+      .print-tag::after{
+        content:'';
+        flex:1;
+        height:1px;
+        background:#ddd;
+      }
+      /* Tesoura na linha divisória */
+      .print-scissors{
+        position:absolute;
+        top:-9px;
+        left:50%;
+        transform:translateX(-50%);
+        background:#fff;
+        padding:0 6px;
+        font-size:14pt;
+        color:#aaa;
+        line-height:1;
+      }
+      /* Cores e fundos */
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+      .etq-top{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .etq-pag-pago,.etq-pag-npago,.badge-estado,.etq-num-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      /* Fotos na impressão */
+      .etq-fotos img{height:65px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- CABEÇALHO DO NEGÓCIO -->
+<header>
+  <div class="logo-circle">👟</div>
+  <div>
+    <div class="biz-nome">A Graxa – Spa do Calçado</div>
+    <div class="biz-info">
+      📍 Rua da Cruz, 94 · 4200-246 Porto<br>
+      📞 963 060 480
+    </div>
+  </div>
+</header>
+
+<!-- CLIENTE -->
+<div class="card">
+  <span class="sec">// dados do cliente</span>
+  <div class="f"><label class="lbl">Nome do Cliente</label><input type="text" id="nome" placeholder="Ex: João Silva"></div>
+  <div class="f"><label class="lbl">Telefone</label><input type="tel" id="tel" placeholder="Ex: 912 345 678"></div>
+</div>
+
+<!-- REPARAÇÃO -->
+<div class="card">
+  <span class="sec">// reparação</span>
+  <div class="f"><label class="lbl">Tipo de Artigo</label><input type="text" id="artigo" placeholder="Ex: Sapatos, Mala, Cinto..."></div>
+  <div class="f"><label class="lbl">Descrição da Reparação</label><textarea id="rep" placeholder="Ex: Substituição de sola, limpeza, costura..."></textarea></div>
+  <div class="f"><label class="lbl">Prazo Estimado (dias)</label><input type="number" id="prazo" value="7" min="1" max="365"></div>
+</div>
+
+<!-- PAGAMENTO -->
+<div class="card">
+  <span class="sec">// pagamento</span>
+  <div class="f"><label class="lbl">Estado do Pagamento</label></div>
+  <div class="pag-toggle">
+    <button class="pag-btn pago" id="btn-pago" onclick="setPag('pago')">✅ PAGO</button>
+    <button class="pag-btn npago active" id="btn-npago" onclick="setPag('npago')">❌ NÃO PAGO</button>
+  </div>
+  <div class="f" style="margin-top:12px"><label class="lbl">Valor (€) — opcional</label><input type="number" id="valor" placeholder="Ex: 25.00" step="0.01" min="0"></div>
+</div>
+
+<!-- FOTOS -->
+<div class="card">
+  <span class="sec">// fotos do artigo</span>
+  <div class="foto-box">
+    <span class="foto-titulo">Foto 1 — Artigo Principal</span>
+    <div class="foto-prev" id="prev1">
+      <img id="img1" alt="">
+      <div class="foto-prev-bar"><button class="btn-rem" onclick="remFoto(1)">🗑 Remover</button></div>
+    </div>
+    <div class="foto-btns">
+      <label class="foto-lbl">
+        <span class="fi">📷</span><span class="ft">Câmara</span>
+        <input type="file" accept="image/*" capture="environment" onchange="procFoto(event,1)">
+      </label>
+      <label class="foto-lbl">
+        <span class="fi">🖼️</span><span class="ft">Galeria</span>
+        <input type="file" accept="image/*" onchange="procFoto(event,1)">
+      </label>
+    </div>
+  </div>
+  <div class="foto-box">
+    <span class="foto-titulo">Foto 2 — Adicional (opcional)</span>
+    <div class="foto-prev" id="prev2">
+      <img id="img2" alt="">
+      <div class="foto-prev-bar"><button class="btn-rem" onclick="remFoto(2)">🗑 Remover</button></div>
+    </div>
+    <div class="foto-btns">
+      <label class="foto-lbl">
+        <span class="fi">📷</span><span class="ft">Câmara</span>
+        <input type="file" accept="image/*" capture="environment" onchange="procFoto(event,2)">
+      </label>
+      <label class="foto-lbl">
+        <span class="fi">🖼️</span><span class="ft">Galeria</span>
+        <input type="file" accept="image/*" onchange="procFoto(event,2)">
+      </label>
+    </div>
+  </div>
+</div>
+
+<!-- DATA & HORA -->
+<div class="card">
+  <span class="sec">// data &amp; hora de entrada</span>
+  <div class="row2">
+    <div class="f"><label class="lbl">Data</label><input type="date" id="data"></div>
+    <div class="f"><label class="lbl">Hora</label><input type="time" id="hora"></div>
+  </div>
+  <button class="btn-now" onclick="setNow()">⏱ Usar Data/Hora Atual</button>
+</div>
+
+<button class="btn-prev" onclick="abrirModal()">👁 Pré-visualizar Etiqueta</button>
+<button class="btn-print" onclick="imprimir()">🖨️ Imprimir Etiqueta (A4)</button>
+<button class="btn-cal" onclick="addCal()">📅 Google Calendar + Alertas Semanais</button>
+<div class="btn-send-row">
+  <button class="btn-email" onclick="abrirEnvio('email')">📧 Email Cliente</button>
+  <button class="btn-sms" onclick="abrirEnvio('sms')">💬 SMS Cliente</button>
+</div>
+<button class="btn-sms" style="width:100%;margin-top:8px;background:#1a3020;color:#4ade80;border-color:#2a5a3a;" onclick="abrirEnvio('whatsapp')">📱 WhatsApp Cliente</button>
+<button class="btn-email" style="width:100%;margin-top:8px;background:#2a1a0a;color:#fb923c;border:1px solid #5a3a1a;border-radius:10px;padding:13px;font-family:monospace;font-size:.82rem;font-weight:600;cursor:pointer;" onclick="enviarEmailLoja()">📋 Enviar Cópia para a Loja (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0b7a2b1a8b1a3a0b1b3b1bcb3b1b4bf90b7bda8fea0a4">[email&#160;protected]</a>)</button>
+
+<!-- MODAL PREVIEW -->
+<div class="ov" id="ov" onclick="fecharSeFora(event)">
+  <div class="modal">
+    <div class="modal-t">// pré-visualização</div>
+    <div class="etq" id="etq-prev">
+      <div class="etq-top">
+        <div class="etq-biz">
+          <span class="etq-biz-nome">A Graxa – Spa do Calçado</span>
+          <span class="etq-biz-info">Rua da Cruz, 94 · 4200-246 Porto · 963 060 480</span>
+        </div>
+        <span class="etq-num-badge" id="p-num">#001</span>
+      </div>
+      <div class="etq-row"><span class="etq-key">Cliente</span><span class="etq-val" id="p-nome">—</span></div>
+      <div class="etq-row"><span class="etq-key">Telefone</span><span class="etq-val" id="p-tel">—</span></div>
+      <div class="etq-row"><span class="etq-key">Artigo</span><span class="etq-val" id="p-artigo">—</span></div>
+      <div class="etq-row"><span class="etq-key">Reparação</span><span class="etq-val etq-rep" id="p-rep">—</span></div>
+      <div style="padding-left:0;margin-bottom:7px"><span id="p-pag" class="etq-pag-npago">❌ NÃO PAGO</span></div>
+      <div class="etq-fotos" id="p-fotos"><img id="p-f1" alt=""><img id="p-f2" alt=""></div>
+      <div class="etq-ftr">
+        <div><div class="etq-key">Entrada</div><div class="etq-val" style="font-size:.72rem" id="p-data">—</div></div>
+        <div class="badge-estado">Em reparação</div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="mb mb-close" onclick="fecharModal()">✕ Fechar</button>
+      <button class="mb mb-print" onclick="imprimir()">🖨️ Imprimir</button>
+      <button class="mb mb-cal" onclick="addCal()">📅 Google Calendar + Alertas</button>
+      <button class="mb" style="grid-column:1/-1;background:#2a1a0a;color:#fb923c;border:1px solid #5a3a1a;" onclick="enviarEmailLoja();fecharModal()">📋 Enviar Cópia para a Loja</button>
+    </div>
+  </div>
+</div>
+
+<!-- ÁREA IMPRESSÃO A4 — Original (topo) + Cópia (baixo) -->
+<div id="print-area">
+  <div class="print-page">
+
+    <!-- METADE SUPERIOR: ORIGINAL (fica com o cliente) -->
+    <div class="print-half">
+      <div class="print-tag">✂ Original — Para o Cliente</div>
+      <div class="etq">
+        <div class="etq-top">
+          <div class="etq-biz">
+            <span class="etq-biz-nome">A Graxa – Spa do Calçado</span>
+            <span class="etq-biz-info">Rua da Cruz, 94 · 4200-246 Porto · 963 060 480</span>
+          </div>
+          <span class="etq-num-badge" id="pa-num">#001</span>
+        </div>
+        <div class="etq-row"><span class="etq-key">Cliente</span><span class="etq-val" id="pa-nome">—</span></div>
+        <div class="etq-row"><span class="etq-key">Telefone</span><span class="etq-val" id="pa-tel">—</span></div>
+        <div class="etq-row"><span class="etq-key">Artigo</span><span class="etq-val" id="pa-artigo">—</span></div>
+        <div class="etq-row"><span class="etq-key">Reparação</span><span class="etq-val etq-rep" id="pa-rep">—</span></div>
+        <div style="padding-left:0;margin-bottom:7px"><span id="pa-pag" class="etq-pag-npago">❌ NÃO PAGO</span></div>
+        <div class="etq-fotos" id="pa-fotos"><img id="pa-f1" alt=""><img id="pa-f2" alt=""></div>
+        <div class="etq-ftr">
+          <div><div class="etq-key">Entrada</div><div class="etq-val" style="font-size:.72rem" id="pa-data">—</div></div>
+          <div class="badge-estado">Em reparação</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- METADE INFERIOR: CÓPIA (fica na loja, colada no artigo) -->
+    <div class="print-half copia">
+      <div class="print-scissors">✂</div>
+      <div class="print-tag">✂ Cópia — Para a Loja</div>
+      <div class="etq">
+        <div class="etq-top">
+          <div class="etq-biz">
+            <span class="etq-biz-nome">A Graxa – Spa do Calçado</span>
+            <span class="etq-biz-info">Rua da Cruz, 94 · 4200-246 Porto · 963 060 480</span>
+          </div>
+          <span class="etq-num-badge" id="pb-num">#001</span>
+        </div>
+        <div class="etq-row"><span class="etq-key">Cliente</span><span class="etq-val" id="pb-nome">—</span></div>
+        <div class="etq-row"><span class="etq-key">Telefone</span><span class="etq-val" id="pb-tel">—</span></div>
+        <div class="etq-row"><span class="etq-key">Artigo</span><span class="etq-val" id="pb-artigo">—</span></div>
+        <div class="etq-row"><span class="etq-key">Reparação</span><span class="etq-val etq-rep" id="pb-rep">—</span></div>
+        <div style="padding-left:0;margin-bottom:7px"><span id="pb-pag" class="etq-pag-npago">❌ NÃO PAGO</span></div>
+        <div class="etq-fotos" id="pb-fotos"><img id="pb-f1" alt=""><img id="pb-f2" alt=""></div>
+        <div class="etq-ftr">
+          <div><div class="etq-key">Entrada</div><div class="etq-val" style="font-size:.72rem" id="pb-data">—</div></div>
+          <div class="badge-estado">Em reparação</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL ENVIO (Email / SMS / WhatsApp) -->
+<div class="ov" id="ov-send" onclick="fecharSendSeFora(event)">
+  <div class="send-modal">
+    <div class="modal-t" id="send-titulo">// enviar por email</div>
+
+    <!-- EMAIL -->
+    <div id="send-email-area">
+      <label class="lbl">Email do Cliente</label>
+      <input class="send-input" type="email" id="send-email-input" placeholder="cliente@email.com">
+      <label class="lbl">Mensagem (pré-preenchida)</label>
+      <div class="send-preview" id="send-email-preview"></div>
+      <div class="modal-btns">
+        <button class="mb mb-close" onclick="fecharSendModal()">✕ Cancelar</button>
+        <button class="mb mb-email" onclick="enviarEmail()">📧 Abrir Email</button>
+      </div>
+    </div>
+
+    <!-- SMS -->
+    <div id="send-sms-area" style="display:none">
+      <label class="lbl">Número do Cliente</label>
+      <input class="send-input" type="tel" id="send-sms-input" placeholder="912 345 678">
+      <label class="lbl">Mensagem SMS (pré-preenchida)</label>
+      <div class="send-preview" id="send-sms-preview"></div>
+      <div class="modal-btns">
+        <button class="mb mb-close" onclick="fecharSendModal()">✕ Cancelar</button>
+        <button class="mb mb-sms" onclick="enviarSMS()">💬 Abrir SMS</button>
+      </div>
+    </div>
+
+    <!-- WHATSAPP -->
+    <div id="send-wa-area" style="display:none">
+      <label class="lbl">Número do Cliente (com indicativo)</label>
+      <input class="send-input" type="tel" id="send-wa-input" placeholder="351 912 345 678">
+      <label class="lbl">Mensagem (pré-preenchida)</label>
+      <div class="send-preview" id="send-wa-preview"></div>
+      <div class="modal-btns">
+        <button class="mb mb-close" onclick="fecharSendModal()">✕ Cancelar</button>
+        <button class="mb mb-wa" onclick="enviarWA()">📱 Abrir WhatsApp</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var fd={1:null,2:null};
+var pagamento='npago';
+var oc=parseInt(localStorage.getItem('graxa_oc')||'0')+1;
+
+function pad(n){return String(n).padStart(2,'0')}
+
+function setNow(){
+  var d=new Date();
+  document.getElementById('data').value=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  document.getElementById('hora').value=pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+function setPag(tipo){
+  pagamento=tipo;
+  document.getElementById('btn-pago').classList.toggle('active',tipo==='pago');
+  document.getElementById('btn-npago').classList.toggle('active',tipo==='npago');
+}
+
+function procFoto(e,slot){
+  var file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var c=document.createElement('canvas');
+      var MAX=900,w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var url=c.toDataURL('image/jpeg',.82);
+      fd[slot]=url;
+      document.getElementById('img'+slot).src=url;
+      document.getElementById('prev'+slot).classList.add('show');
+      toast('✅ Foto '+slot+' adicionada!');
+    };
+    img.src=ev.target.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function remFoto(slot){
+  fd[slot]=null;
+  document.getElementById('img'+slot).src='';
+  document.getElementById('prev'+slot).classList.remove('show');
+}
+
+function fmtDate(d,h){
+  if(!d)return'—';
+  var p=d.split('-');
+  return p[2]+'/'+p[1]+'/'+p[0]+(h?'  '+h:'');
+}
+
+function getPagHTML(){
+  var valor=document.getElementById('valor').value;
+  var sufixo=valor?(' — '+parseFloat(valor).toFixed(2)+' euros'):'';
+  if(pagamento==='pago')
+    return '<span class="etq-pag-pago">✅ PAGO'+sufixo+'</span>';
+  else
+    return '<span class="etq-pag-npago">❌ NÃO PAGO'+sufixo+'</span>';
+  if(pagamento==='pago')
+    return '<span class="etq-pag-pago">✅ PAGO'+sufixo+'</span>';
+  else
+    return '<span class="etq-pag-npago">❌ NÃO PAGO'+sufixo+'</span>';
+}
+
+function fillEtq(px){
+  document.getElementById(px+'-nome').textContent=document.getElementById('nome').value.trim()||'—';
+  document.getElementById(px+'-tel').textContent=document.getElementById('tel').value.trim()||'—';
+  document.getElementById(px+'-artigo').textContent=document.getElementById('artigo').value.trim()||'—';
+  document.getElementById(px+'-rep').textContent=document.getElementById('rep').value.trim()||'—';
+  document.getElementById(px+'-data').textContent=fmtDate(document.getElementById('data').value,document.getElementById('hora').value);
+  document.getElementById(px+'-num').textContent='#'+String(oc).padStart(3,'0');
+  document.getElementById(px+'-pag').outerHTML=getPagHTML().replace('class="','id="'+px+'-pag" class="');
+  var fDiv=document.getElementById(px+'-fotos');
+  var f1=document.getElementById(px+'-f1');
+  var f2=document.getElementById(px+'-f2');
+  var h1=!!fd[1],h2=!!fd[2];
+  if(h1||h2){
+    fDiv.classList.add('show');
+    f1.style.display=h1?'block':'none';if(h1)f1.src=fd[1];
+    f2.style.display=h2?'block':'none';if(h2)f2.src=fd[2];
+    f1.className=(h1&&!h2)?'single':'';
+    f2.className=(!h1&&h2)?'single':'';
+  }else{fDiv.classList.remove('show');}
+}
+
+function abrirModal(){fillEtq('p');document.getElementById('ov').classList.add('open');}
+function fecharModal(){document.getElementById('ov').classList.remove('open');}
+function fecharSeFora(e){if(e.target===document.getElementById('ov'))fecharModal();}
+
+function imprimir(){
+  if(!document.getElementById('nome').value.trim()){alert('Preencha o nome do cliente.');return;}
+  fillEtq('pa'); // Original
+  fillEtq('pb'); // Cópia
+  fecharModal();
+  localStorage.setItem('graxa_oc',oc);
+  oc++;
+  setTimeout(function(){window.print();},300);
+}
+
+function addCal(){
+  var nome=document.getElementById('nome').value.trim();
+  var artigo=document.getElementById('artigo').value.trim();
+  var rep=document.getElementById('rep').value.trim();
+  var tel=document.getElementById('tel').value.trim();
+  var prazo=parseInt(document.getElementById('prazo').value)||7;
+  var dr=document.getElementById('data').value;
+  if(!nome){alert('Preencha o nome do cliente.');return;}
+  if(!dr){alert('Preencha a data de entrada.');return;}
+  var pag=pagamento==='pago'?'✅ PAGO':'❌ NÃO PAGO';
+  var valor=document.getElementById('valor').value;
+  var dtI=new Date(dr+'T09:00:00');dtI.setDate(dtI.getDate()+prazo);
+  var dtF=new Date(dr+'T10:00:00');dtF.setDate(dtF.getDate()+prazo);
+  function gd(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';}
+  var title='🔧 '+nome+(artigo?' – '+artigo:'');
+  var det='🏪 A Graxa – Spa do Calçado\n📍 Rua da Cruz, 94 · 4200-246 Porto\n📞 963 060 480\n\n'
+    +'CLIENTE: '+nome+'\nTELEFONE: '+(tel||'—')+'\nARTIGO: '+(artigo||'—')
+    +'\nREPARAÇÃO: '+(rep||'—')+'\nPRAZO: '+prazo+' dias'
+    +'\nPAGAMENTO: '+pag+(valor?' ('+parseFloat(valor).toFixed(2)+' euros)':'')
+    +'\n\n⚠️ Contactar cliente para levantamento!';
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)+'&dates='+gd(dtI)+'/'+gd(dtF)+'&details='+encodeURIComponent(det)+'&recur='+encodeURIComponent('RRULE:FREQ=WEEKLY;COUNT=4');
+  window.open(url,'_blank');
+  toast('📅 Google Calendar aberto!');
+  fecharModal();
+}
+
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+function getMsgTexto(){
+  var nome=document.getElementById('nome').value.trim()||'—';
+  var artigo=document.getElementById('artigo').value.trim()||'—';
+  var rep=document.getElementById('rep').value.trim()||'—';
+  var data=fmtDate(document.getElementById('data').value,document.getElementById('hora').value);
+  var prazo=document.getElementById('prazo').value||'7';
+  var valor=document.getElementById('valor').value;
+  var pag=pagamento==='pago'?'✅ Pago':(valor?'❌ Não pago ('+parseFloat(valor).toFixed(2)+' euros em falta)':'❌ Não pago');
+  var num='#'+String(oc).padStart(3,'0');
+  return 'Olá '+nome+',\n\n'
+    +'A sua reparação foi registada na A Graxa – Spa do Calçado.\n\n'
+    +'📋 COMPROVATIVO DE ENTREGA\n'
+    +'────────────────────────\n'
+    +'Ordem: '+num+'\n'
+    +'Artigo: '+artigo+'\n'
+    +'Reparação: '+rep+'\n'
+    +'Entrada: '+data+'\n'
+    +'Prazo estimado: '+prazo+' dias\n'
+    +'Pagamento: '+pag+'\n'
+    +'────────────────────────\n\n'
+    +'📍 Rua da Cruz, 94 · 4200-246 Porto\n'
+    +'📞 963 060 480\n\n'
+    +'Obrigado pela sua preferência!\n'
+    +'A Graxa – Spa do Calçado';
+}
+
+var EMAIL_LOJA='graxaspacalcado@gmx.pt';
+
+function abrirEnvio(tipo){
+  if(!document.getElementById('nome').value.trim()){alert('Preencha o nome do cliente.');return;}
+  tipoEnvio=tipo;
+  var msg=getMsgTexto();
+  // Pré-preencher número de tel do cliente
+  var telCliente=document.getElementById('tel').value.trim();
+
+  document.getElementById('send-email-area').style.display='none';
+  document.getElementById('send-sms-area').style.display='none';
+  document.getElementById('send-wa-area').style.display='none';
+
+  if(tipo==='email'){
+    document.getElementById('send-titulo').textContent='// enviar por email';
+    document.getElementById('send-email-preview').textContent=msg;
+    document.getElementById('send-email-area').style.display='block';
+  } else if(tipo==='sms'){
+    document.getElementById('send-titulo').textContent='// enviar por sms';
+    // SMS mais curto
+    var nome=document.getElementById('nome').value.trim();
+    var artigo=document.getElementById('artigo').value.trim()||'artigo';
+    var prazo=document.getElementById('prazo').value||'7';
+    var num='#'+String(oc).padStart(3,'0');
+    var smsMsg='A Graxa – Spa do Calçado\nOlá '+nome+'! A sua reparação '+num+' ('+artigo+') foi registada. Prazo: '+prazo+' dias. Contacto: 963 060 480';
+    document.getElementById('send-sms-preview').textContent=smsMsg;
+    if(telCliente) document.getElementById('send-sms-input').value=telCliente;
+    document.getElementById('send-sms-area').style.display='block';
+  } else if(tipo==='whatsapp'){
+    document.getElementById('send-titulo').textContent='// enviar por whatsapp';
+    document.getElementById('send-wa-preview').textContent=msg;
+    if(telCliente) document.getElementById('send-wa-input').value='351'+telCliente.replace(/\s/g,'');
+    document.getElementById('send-wa-area').style.display='block';
+  }
+  document.getElementById('ov-send').classList.add('open');
+}
+
+function fecharSendModal(){document.getElementById('ov-send').classList.remove('open');}
+function fecharSendSeFora(e){if(e.target===document.getElementById('ov-send'))fecharSendModal();}
+
+function enviarEmail(){
+  var email=document.getElementById('send-email-input').value.trim();
+  if(!email){alert('Introduza o email do cliente.');return;}
+  var nome=document.getElementById('nome').value.trim();
+  var num='#'+String(oc).padStart(3,'0');
+  var assunto='A Graxa – Comprovativo de Reparação '+num+' – '+nome;
+  var corpo=getMsgTexto();
+  // Envia para o cliente com CC automático para a loja
+  var url='mailto:'+encodeURIComponent(email)
+    +'?cc='+encodeURIComponent(EMAIL_LOJA)
+    +'&subject='+encodeURIComponent(assunto)
+    +'&body='+encodeURIComponent(corpo);
+  window.location.href=url;
+  fecharSendModal();
+  toast('📧 A abrir email (CC: loja)...');
+}
+
+function enviarEmailLoja(){
+  if(!document.getElementById('nome').value.trim()){alert('Preencha o nome do cliente.');return;}
+  var nome=document.getElementById('nome').value.trim();
+  var num='#'+String(oc).padStart(3,'0');
+  var assunto='[CÓPIA LOJA] Reparação '+num+' – '+nome;
+  var corpo='CÓPIA INTERNA – A GRAXA SPA DO CALÇADO\n\n'+getMsgTexto();
+  var url='mailto:'+encodeURIComponent(EMAIL_LOJA)
+    +'?subject='+encodeURIComponent(assunto)
+    +'&body='+encodeURIComponent(corpo);
+  window.location.href=url;
+  toast('📧 A enviar cópia para a loja...');
+}
+
+function enviarSMS(){
+  var num=document.getElementById('send-sms-input').value.trim();
+  if(!num){alert('Introduza o número do cliente.');return;}
+  var nome=document.getElementById('nome').value.trim();
+  var artigo=document.getElementById('artigo').value.trim()||'artigo';
+  var prazo=document.getElementById('prazo').value||'7';
+  var ordem='#'+String(oc).padStart(3,'0');
+  var smsMsg='A Graxa – Spa do Calçado\nOlá '+nome+'! A sua reparação '+ordem+' ('+artigo+') foi registada. Prazo: '+prazo+' dias. Contacto: 963 060 480';
+  // sms: URI funciona no Android para abrir app de SMS
+  var url='sms:'+num+'?body='+encodeURIComponent(smsMsg);
+  window.location.href=url;
+  fecharSendModal();
+  toast('💬 A abrir SMS...');
+}
+
+function enviarWA(){
+  var num=document.getElementById('send-wa-input').value.trim().replace(/\s|\+|-/g,'');
+  if(!num){alert('Introduza o número do cliente
